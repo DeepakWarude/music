@@ -1,0 +1,42 @@
+
+1. Basic awk Syntax
+Basic structure:
+awk 'pattern { action }' filename
+
+awk '{ print $1 }' filename  # Prints the first column of each lin
+
+
+
+2. Printing Specific Columns
+Access columns in a file using $1, $2, etc., where $1 is the first column.
+
+awk '{ print $1, $3 }' filename  # Prints the first and third columns
+
+
+
+3. Pattern Matching
+awk '/pattern/' filename
+
+awk '/error/ { print $0 }' logfile  # Prints lines with "error" in a log f
+
+
+
+
+4. Conditional Statements
+Use if statements within awk to conditionally process lines.
+
+awk '{ if ($3 > 50) print $1, $3 }' filename  # Prints columns 1 and 3 if column 3 is greater than 50
+
+
+
+5. Built-in Variables
+NR: Number of the current record (line number).
+NF: Number of fields in the current record.
+awk '{ print NR, NF, $0 }' filename  # Prints line number, number of fields, and the line
+
+
+
+6. Using BEGIN and END Blocks
+BEGIN: Runs before processing any lines.
+END: Runs after processing all lines.
+awk 'BEGIN { print "Start of File" } { print $0 } END { print "End of File" }' filena

@@ -1,0 +1,101 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    int numProcesses, numResources;
+
+    // Input the number of processes and resources
+    cout << "Enter the number of processes: ";
+    cin >> numProcesses;
+    cout << "Enter the number of resources: ";
+    cin >> numResources;
+
+    int max[10][10];        // Maximum resource needs of each process
+    int allocation[10][10]; // Currently allocated resources
+    int need[10][10+];       // Remaining resource needs
+    int available[10];      // Available resources
+
+    // Input the maximum resources matrix (max)
+    cout << "Enter the maximum resources matrix (max):" << endl;
+    for (int i = 0; i < numProcesses; i++) {
+        cout << "Process P" << i + 1 << ": ";
+        for (int j = 0; j < numResources; j++) {
+            cin >> max[i][j];
+        }
+    }
+
+    // Input the allocation matrix
+    cout << "Enter the allocation matrix:" << endl;
+    for (int i = 0; i < numProcesses; i++) {
+        cout << "Process P" << i + 1 << ": ";
+        for (int j = 0; j < numResources; j++) {
+            cin >> allocation[i][j];
+        }
+    }
+
+    // Input the available resources
+    cout << "Enter the available resources: ";
+    for (int j = 0; j < numResources; j++) {
+        cin >> available[j];
+    }
+
+    // Calculate the need matrix
+    for (int i = 0; i < numProcesses; i++) {
+        for (int j = 0; j < numResources; j++) {
+            need[i][j] = max[i][j] - allocation[i][j];
+        }
+    }
+
+    // Check system's safe state
+    int work[10];
+    bool finish[10] = { false };
+    int safeSequence[10];
+    int count = 0;
+
+    // Initialize work array with available resources
+    for (int i = 0; i < numResources; i++) {
+        work[i] = available[i];
+    }
+
+    while (count < numProcesses) {
+        bool found = false;
+
+        for (int p = 0; p < numProcesses; p++) {
+            if (!finish[p]) {
+                // Check if process p can finish
+                bool canAllocate = true;
+                for (int r = 0; r < numResources; r++) {
+                    if (need[p][r] > work[r]) {
+                        canAllocate = false;
+                        break;
+                    }
+                }
+
+                // If process can finish, update work and mark as finished
+                if (canAllocate) {
+                    for (int r = 0; r < numResources; r++) {
+                        work[r] += allocation[p][r]; // Simulate allocation
+                    }
+                    safeSequence[count++] = p; // Add to safe sequence
+                    finish[p] = true; // Mark process as finished
+                    found = true;
+                }
+            }
+        }
+
+        // If no process could be allocated, system is unsafe
+        if (!found) {
+            cout << "System is in an unsafe state." << endl;
+            return 0; // Exit program
+        }
+    }
+
+    // If all processes could finish, the system is safe
+    cout << "System is in a safe state.\nSafe sequence is: ";
+    for (int i = 0; i < numProcesses; i++) {
+        cout << "P" << safeSequence[i] + 1 << " "; // +1 for 1-based indexing
+    }
+    cout << endl;
+
+    return 0;
+}

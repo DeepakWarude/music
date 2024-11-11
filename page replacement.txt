@@ -1,0 +1,192 @@
+#include <iostream>
+#include <climits>
+
+#define MAX_PAGES 100
+#define FRAME_SIZE 3
+
+using namespace std;
+
+// Function to check if a page is present in the frame
+bool isPagePresent(int frame[], int frameSize, int page) {
+    for (int i = 0; i < frameSize; i++) {
+        if (frame[i] == page) {
+            return true; // Page found
+        }
+    }
+    return false; // Page not found
+}
+
+// Function to print the frame contents
+void printFrame(int frame[], int frameSize) {
+    for (int i = 0; i < frameSize; i++) {
+        if (frame[i] == -1)
+            cout << " - "; // Print dash for empty slot
+        else
+            cout << " " << frame[i] << " ";
+    }
+}
+
+// FIFO Page Replacement
+void FIFO(int pages[], int numPages, int frameSize) {
+    int frame[frameSize];
+    int pageFaults = 0;
+    int index = 0;
+
+    // Initialize the frame with -1 (empty)
+    for (int i = 0; i < frameSize; i++) {
+        frame[i] = -1;
+    }
+
+    cout << "\nFIFO Page Replacement\n";
+    cout << "Step\tPage\tFrame\n";
+
+    for (int i = 0; i < numPages; i++) {
+        cout << i + 1 << "\t" << pages[i] << "\t";
+
+        if (!isPagePresent(frame, frameSize, pages[i])) {
+            frame[index] = pages[i]; // Replace the page at the current index
+            index = (index + 1) % frameSize; // Update the index in a circular manner
+            pageFaults++;
+        }
+        
+        printFrame(frame, frameSize);
+        cout << "\n";
+    }
+
+    cout << "\nTotal Page Faults (FIFO): " << pageFaults << endl;
+}
+
+// LRU Page Replacement
+void LRU(int pages[], int numPages, int frameSize) {
+    int frame[frameSize], lastUsed[frameSize];
+    int pageFaults = 0;
+
+    // Initialize the frame with -1 (empty)
+    for (int i = 0; i < frameSize; i++) {
+        frame[i] = -1;
+        lastUsed[i] = -1; // To track last used time of each page
+    }
+
+    cout << "\nLRU Page Replacement\n";
+    cout << "Step\tPage\tFrame\n";
+
+    for (int time = 0; time < numPages; time++) {
+        int page = pages[time];
+        int found = 0;
+
+        // Check if the page is already in the frame
+        for (int i = 0; i < frameSize; i++) {
+            if (frame[i] == page) {
+                found = 1;
+                lastUsed[i] = time; // Update last used time
+                break;
+            }
+        }
+
+        cout << time + 1 << "\t" << page << "\t";
+
+        if (!found) {
+            // Find the least recently used page and replace it
+            int lru = 0;
+            for (int i = 1; i < frameSize; i++) {
+                if (lastUsed[i] < lastUsed[lru]) {
+                    lru = i;
+                }
+            }
+
+            frame[lru] = page; // Replace the LRU page
+            lastUsed[lru] = time;
+            pageFaults++;
+        }
+
+        printFrame(frame, frameSize);
+        cout << "\n";
+    }
+
+    cout << "\nTotal Page Faults (LRU): " << pageFaults << endl;
+}
+
+// Optimal Page Replacement
+void OPT(int pages[], int numPages, int frameSize) {
+    int frame[frameSize];
+    int pageFaults = 0;
+
+    // Initialize the frame with -1 (empty)
+    for (int i = 0; i < frameSize; i++) {
+        frame[i] = -1;
+    }
+
+    cout << "\nOptimal Page Replacement\n";
+    cout << "Step\tPage\tFrame\n";
+
+    for (int time = 0; time < numPages; time++) {
+        int page = pages[time];
+        cout << time + 1 << "\t" << page << "\t";
+
+        if (!isPagePresent(frame, frameSize, page)) {
+            // Find the page to replace
+            int farthest = -1, replaceIndex = -1;
+            for (int i = 0; i < frameSize; i++) {
+                int j;
+                for (j = time + 1; j < numPages; j++) {
+                    if (frame[i] == pages[j]) {
+                        if (j > farthest) {
+                            farthest = j;
+                            replaceIndex = i;
+                        }
+                        break;
+                    }
+                }
+                if (j == numPages) {
+                    replaceIndex = i;
+                    break;
+                }
+            }
+
+            frame[replaceIndex] = page; // Replace the farthest page
+            pageFaults++;
+        }
+
+        printFrame(frame, frameSize);
+        cout << "\n";
+    }
+
+    cout << "\nTotal Page Faults (Optimal): " << pageFaults << endl;
+}
+
+int main() {
+    int pages[MAX_PAGES];
+    int numPages, choice;
+    
+    cout << "Enter the number of pages: ";
+    cin >> numPages;
+
+    cout << "Enter the page reference string (space-separated): ";
+    for (int i = 0; i < numPages; i++) {
+        cin >> pages[i];
+    }
+
+    cout << "\nChoose a page replacement algorithm:\n";
+    cout << "1. FIFO\n";
+    cout << "2. LRU\n";
+    cout << "3. OPT\n";
+    cout << "Enter your choice: ";
+    cin >> choice;
+
+    switch (choice) {
+        case 1:
+            FIFO(pages, numPages, FRAME_SIZE);
+            break;
+        case 2:
+            LRU(pages, numPages, FRAME_SIZE);
+            break;
+        case 3:
+            OPT(pages, numPages, FRAME_SIZE);
+            break;
+        default:
+            cout << "Invalid choice!" << endl;
+            break;
+    }
+
+    return 0;
+}

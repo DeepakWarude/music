@@ -1,0 +1,12 @@
+echo -n "Enter the number of rows: "
+read number
+count=1
+while [ $count -le $number ]; do
+i=1
+while [ $i -le $count ]; do
+echo -n "$i "
+((i++))
+done
+echo ""
+((count++))
+done

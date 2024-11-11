@@ -1,0 +1,66 @@
+#include <iostream>
+using namespace std;
+#define MAX_PAGES 20                          // Define a maximum limit for pages
+void fifoPageReplacement(int frames, int pages[], int numPages) {
+int frame[MAX_PAGES];  // Array to hold the pages in frames (initialized to empty)
+    int pageFaults = 0;
+    int front = 0;  // Pointer to the front of the queue
+    // Initialize frames with -1 to indicate they are empty
+    for (int i = 0; i < frames; i++) {
+        frame[i] = -1;
+    }
+    cout << "Page Replacement using FIFO:" << endl;
+    cout << "Frames: " << frames << endl;
+    cout << "Pages: ";
+    for (int i = 0; i < numPages; i++) {
+        cout << pages[i] << " ";
+    }
+    cout << endl;
+
+    for (int i = 0; i < numPages; i++) {
+        bool found = false;
+        // Check if the page is already in a frame
+        for (int j = 0; j < frames; j++) {
+            if (frame[j] == pages[i]) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            // Page fault: Add new page to available frame or replace oldest one
+            frame[front % frames] = pages[i];  // Circular replacement using modulo
+            front++;
+            pageFaults++;
+        }
+
+        // Print the current state of frames after each operation
+        cout << "Page " << pages[i] << ": ";
+        for (int j = 0; j < frames; j++) {
+            if (frame[j] == -1)
+                cout << "- ";
+            else
+                cout << frame[j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << "Total Page Faults: " << pageFaults << endl;
+}
+
+
+int main() {
+    int frames = 3;  // Number of frames in main memory
+    int n;
+    cout<<"Enter number of pages:";
+    cin>>n;
+    int pages[n]; //= {1, 2, 3, 4, 2, 1, 5, 6};  // Pages to be loaded
+    cout<<"enter pages:";
+    for(int i=0;i<n;i++){
+        cin>>pages[i];
+    }
+    
+    int numPages = sizeof(pages) / sizeof(pages[0]);  // Calculate the number of pages
+    fifoPageReplacement(frames, pages, numPages);
+    return 0;
+}

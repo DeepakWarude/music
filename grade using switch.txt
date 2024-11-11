@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Read marks for 5 subjects
+echo "Enter marks for 5 subjects:"
+read -p "Subject 1: " subject1
+read -p "Subject 2: " subject2
+read -p "Subject 3: " subject3
+read -p "Subject 4: " subject4
+read -p "Subject 5: " subject5
+
+# Calculate total and average
+total=$((subject1 + subject2 + subject3 + subject4 + subject5))
+average=$((total / 5))
+
+# Display total and average
+echo "Total Marks: $total"
+echo "Average Marks: $average"
+
+# Determine final class using the case statement
+case 1 in
+    $(($average >= 90)))
+        class="A+"
+        ;;
+    $(($average >= 80 && $average < 90)))
+        class="A"
+        ;;
+    $(($average >= 70 && $average < 80)))
+        class="B"
+        ;;
+    $(($average >= 60 && $average < 70)))
+        class="C"
+        ;;
+    $(($average >= 50 && $average < 60)))
+        class="D"
+        ;;
+    *)
+        class="Fail"
+        ;;
+esac
+
+# Display the final class
+echo "Final Class: $class"

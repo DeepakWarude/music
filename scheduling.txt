@@ -1,0 +1,215 @@
+
+#include <iostream>
+using namespace std;
+
+const int MAX_PROCESSES = 10;
+
+struct Process {
+    int pid;
+    int bt;
+    int wt;
+    int tat;
+    int priority;
+    int rem_bt;
+};
+
+void printGanttChart(int gantt[], int n) {
+    cout << "\nGantt Chart: ";
+    for (int i = 0; i < n; i++) {
+        cout << "| P" << gantt[i] << " ";
+    }
+    cout << "|\n";
+}
+
+void FCFS(Process processes[], int n) {
+    int total_wt = 0, total_tat = 0;
+    int gantt[n];
+
+    processes[0].wt = 0;
+    for (int i = 1; i < n; i++) {
+        processes[i].wt = processes[i-1].bt + processes[i-1].wt;
+    }
+
+    for (int i = 0; i < n; i++) {
+        processes[i].tat = processes[i].wt + processes[i].bt;
+        total_wt += processes[i].wt;
+        total_tat += processes[i].tat;
+        gantt[i] = processes[i].pid;
+    }
+
+    cout << "\nFCFS Scheduling:\n";
+    cout << "Process ID | Burst Time | Waiting Time | Turnaround Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << processes[i].pid << "         | " << processes[i].bt 
+             << "         | " << processes[i].wt << "           | " << processes[i].tat << "\n";
+    }
+
+    cout << "\nAverage Waiting Time = " << (float)total_wt / n << "\n";
+    cout << "Average Turnaround Time = " << (float)total_tat / n << "\n";
+    printGanttChart(gantt, n);
+}
+
+void SJF(Process processes[], int n) {
+    int total_wt = 0, total_tat = 0;
+    int gantt[n];
+
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-i-1; j++) {
+            if (processes[j].bt > processes[j+1].bt) {
+                Process temp = processes[j];
+                processes[j] = processes[j+1];
+                processes[j+1] = temp;
+            }
+        }
+    }
+
+    processes[0].wt = 0;
+    for (int i = 1; i < n; i++) {
+        processes[i].wt = processes[i-1].bt + processes[i-1].wt;
+    }
+
+    for (int i = 0; i < n; i++) {
+        processes[i].tat = processes[i].wt + processes[i].bt;
+        total_wt += processes[i].wt;
+        total_tat += processes[i].tat;
+        gantt[i] = processes[i].pid;
+    }
+
+    cout << "\nSJF Scheduling (Non-Preemptive):\n";
+    cout << "Process ID | Burst Time | Waiting Time | Turnaround Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << processes[i].pid << "         | " << processes[i].bt 
+             << "         | " << processes[i].wt << "           | " << processes[i].tat << "\n";
+    }
+
+    cout << "\nAverage Waiting Time = " << (float)total_wt / n << "\n";
+    cout << "Average Turnaround Time = " << (float)total_tat / n << "\n";
+    printGanttChart(gantt, n);
+}
+
+void PriorityScheduling(Process processes[], int n) {
+    int total_wt = 0, total_tat = 0;
+    int gantt[n];
+
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-i-1; j++) {
+            if (processes[j].priority > processes[j+1].priority) {
+                Process temp = processes[j];
+                processes[j] = processes[j+1];
+                processes[j+1] = temp;
+            }
+        }
+    }
+
+    processes[0].wt = 0;
+    for (int i = 1; i < n; i++) {
+        processes[i].wt = processes[i-1].bt + processes[i-1].wt;
+    }
+
+    for (int i = 0; i < n; i++) {
+        processes[i].tat = processes[i].wt + processes[i].bt;
+        total_wt += processes[i].wt;
+        total_tat += processes[i].tat;
+        gantt[i] = processes[i].pid;
+    }
+
+    cout << "\nPriority Scheduling (Non-Preemptive):\n";
+    cout << "Process ID | Burst Time | Waiting Time | Turnaround Time | Priority\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << processes[i].pid << "         | " << processes[i].bt 
+             << "         | " << processes[i].wt << "           | " << processes[i].tat 
+             << "               | " << processes[i].priority << "\n";
+    }
+
+    cout << "\nAverage Waiting Time = " << (float)total_wt / n << "\n";
+    cout << "Average Turnaround Time = " << (float)total_tat / n << "\n";
+    printGanttChart(gantt, n);
+}
+
+void RoundRobin(Process processes[], int n, int quantum) {
+    int total_wt = 0, total_tat = 0;
+    int gantt[100];
+    int time = 0, idx = 0;
+
+    for (int i = 0; i < n; i++) {
+        processes[i].rem_bt = processes[i].bt;
+    }
+
+    while (true) {
+        int done = 1;
+        for (int i = 0; i < n; i++) {
+            if (processes[i].rem_bt > 0) {
+                done = 0;
+                if (processes[i].rem_bt > quantum) {
+                    processes[i].rem_bt -= quantum;
+                    gantt[idx++] = processes[i].pid;
+                    time += quantum;
+                } else {
+                    time += processes[i].rem_bt;
+                    processes[i].wt = time - processes[i].bt;
+                    processes[i].tat = time;
+                    processes[i].rem_bt = 0;
+                    gantt[idx++] = processes[i].pid;
+                }
+            }
+        }
+        if (done) break;
+    }
+
+    for (int i = 0; i < n; i++) {
+        total_wt += processes[i].wt;
+        total_tat += processes[i].tat;
+    }
+
+    cout << "\nRound Robin Scheduling:\n";
+    cout << "Process ID | Burst Time | Waiting Time | Turnaround Time\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << processes[i].pid << "         | " << processes[i].bt 
+             << "         | " << processes[i].wt << "           | " << processes[i].tat << "\n";
+    }
+
+    cout << "\nAverage Waiting Time = " << (float)total_wt / n << "\n";
+    cout << "Average Turnaround Time = " << (float)total_tat / n << "\n";
+    printGanttChart(gantt, idx);
+}
+
+int main() {
+    Process processes[MAX_PROCESSES];
+    int n, choice, quantum;
+
+    cout << "Enter the number of processes (max 10): ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        processes[i].pid = i + 1;
+        cout << "\nEnter burst time for process P" << i + 1 << ": ";
+        cin >> processes[i].bt;
+        cout << "Enter priority for process P" << i + 1 << " (for Priority Scheduling): ";
+        cin >> processes[i].priority;
+    }
+
+    cout << "\nChoose a scheduling algorithm:\n";
+    cout << "1. FCFS\n2. SJF\n3. Priority Scheduling\n4. Round Robin\nEnter your choice: ";
+    cin >> choice;
+
+    switch(choice) {
+        case 1:
+            FCFS(processes, n);
+            break;
+        case 2:
+            SJF(processes, n);
+            break;
+        case 3:
+            PriorityScheduling(processes, n);
+            break;
+        case 4:
+            cout << "Enter the time quantum for Round Robin: ";
+            cin >> quantum;
+            RoundRobin(processes, n, quantum);
+            break;
+        default:
+            cout << "Invalid choice!\n";
+    }
+
+    return 0;
+}

@@ -1,0 +1,78 @@
+#include <iostream>
+using namespace std;
+
+int findLRU(int time[], int capacity) {
+    int minimum = time[0], pos = 0;
+    for (int i = 1; i < capacity; ++i) {
+        if (time[i] < minimum) {
+            minimum = time[i];
+            pos = i;
+        }
+    }
+    return pos;
+}
+
+void lruPageReplacement(int pages[], int n, int capacity) {
+    int frames[capacity];
+    int time[capacity];
+    int page_faults = 0;
+
+    // Initialize frames and time arrays
+    for (int i = 0; i < capacity; ++i) {
+        frames[i] = -1;                         // -1 indicates an empty frame
+        time[i] = 0;    						// Initial time
+    }
+
+    for (int i = 0; i < n; ++i) {
+        bool page_found = false;
+        
+        // Check if the page is already in one of the frames
+        for (int j = 0; j < capacity; ++j) {
+            if (frames[j] == pages[i]) {
+                page_found = true;
+                time[j] = i + 1; // Update the time for the page
+                break;
+            }
+        }
+
+        // If the page is not found in frames
+        if (!page_found) {
+            int pos = findLRU(time, capacity); // Find LRU position
+            frames[pos] = pages[i];            // Replace LRU page
+            time[pos] = i + 1;                  // Update time
+            page_faults++;
+        }
+
+        // Print current frames
+        cout << "Frames after page " << pages[i] << ": ";
+        for (int j = 0; j < capacity; ++j) {
+            if (frames[j] == -1) {
+                cout << " - ";
+            } else {
+                cout << frames[j] << " ";
+            }
+        }
+        cout << endl;
+    }
+
+    cout << "Total Page Faults: " << page_faults << endl;
+}
+
+int main() {
+    int x;
+    cout<<"Enter number of pages:";
+    cin>>x;
+    int pages[x]; //= {1, 2, 3, 4, 5, 3, 4, 1, 6, 7};
+    cout<<"enter pages:";
+    for(int i=0;i<x;i++){
+        cin>>pages[i];
+    }
+    //int n = sizeof(pages) / sizeof(pages[0]);
+    int capacity = 3;
+
+    cout << "LRU Page Replacement Algorithm Simulation" << endl;
+    lruPageReplacement(pages, x, capacity);
+
+    return 0;
+}
+

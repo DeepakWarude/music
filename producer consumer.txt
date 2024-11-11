@@ -1,0 +1,95 @@
+#include <iostream>
+using namespace std;
+
+// Global variables
+int mutex = 1;  // Binary semaphore to ensure mutual exclusion
+int full = 0;   // Tracks the number of full slots in the buffer
+int empty = 3;  // Tracks the number of empty slots in the buffer (buffer size = 3)
+int x = 0;      // Item number
+int tp = 0;     // Total produced items
+int tc = 0;     // Total consumed items
+int bi = 0;     // Items currently in the buffer
+
+
+// Function to simulate the wait operation (P operation)
+int wait(int s) {
+    return (--s);
+}
+
+// Function to simulate the signal operation (V operation)
+int signal(int s) {
+    return (++s);
+}
+
+// Producer function
+void producer() {
+    mutex = wait(mutex);  // Lock the critical section
+
+    full = signal(full);  // Increment the count of full slots
+    empty = wait(empty);  // Decrement the count of empty slots
+    x++;  // Produce the next item
+
+    cout << "\nProducer produces the item " << x;
+    tp++;  // Increment total produced items
+    bi++;  // Increment items in the buffer
+
+    mutex = signal(mutex);  // Release the critical section
+}
+
+// Consumer function
+void consumer() {
+    mutex = wait(mutex);  // Lock the critical section
+
+    full = wait(full);  // Decrement the count of full slots
+    empty = signal(empty);  // Increment the count of empty slots
+
+    cout << "Consumer consumes the item " << x;
+    tc++;  // Increment total consumed items
+    bi--;  // Decrement items in the buffer
+
+    x--;  // Remove the consumed item
+
+    mutex = signal(mutex);  // Release the critical section
+}
+
+
+
+int main() {
+    int n;  // Variable to store user choice
+
+    cout << "\n 1. Producer \n 2. Consumer \n 3. Check for total produced and consumed \n";
+
+    while (true) {
+        cout << "\nEnter your choice: ";
+        cin >> n;
+
+        switch (n) {
+            case 1:
+                if (mutex == 1 && empty != 0)
+                    producer();
+                else
+                    cout << "Buffer is full\n";
+                break;
+
+            case 2:
+                if (mutex == 1 && full != 0)
+                    consumer();
+                else
+                    cout << "Buffer is empty\n";
+                break;
+
+            case 3:
+                cout << "\nTotal items produced = " << tp;
+                cout << "\nTotal items consumed = " << tc;
+                cout << "\nItems in buffer = " << bi << "\n";
+                break;
+
+            default:
+                cout << "Invalid choice. Please try again.\n";
+                break;
+        }
+    }
+
+    return 0;
+}
+

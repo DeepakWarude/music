@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Prompt the user for marks of three subjects
+echo "Enter marks of Subject 1:"
+read subject1
+echo "Enter marks of Subject 2:"
+read subject2
+echo "Enter marks of Subject 3:"
+read subject3
+
+# Calculate total and percentage
+total=$((subject1 + subject2 + subject3))
+percentage=$((total / 3))
+
+# Determine the grade
+if ((percentage >= 90)); then
+    grade="A"
+elif ((percentage >= 75)); then
+    grade="B"
+elif ((percentage >= 50)); then
+    grade="C"
+else
+    grade="Fail"
+fi
+
+# Redirect only the specific results to 'output.txt'
+echo "Total Marks: $total" > output.txt
+echo "Percentage: $percentage%" >> output.txt
+echo "Grade: $grade" >> output.txt

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Prompt the user to enter a number
+echo "Enter a number:"
+read number
+
+# Initialize variables
+fact=1
+is_prime=true
+
+# Calculate factorial
+for ((i=1; i<=number; i++))
+do
+    fact=$((fact * i))
+done
+
+# Check if the number is prime
+if ((number <= 1)); then
+    is_prime=false
+else
+    for ((i=2; i<=number/2; i++))
+    do
+        if ((number % i == 0)); then
+            is_prime=false
+            break
+        fi
+    done
+fi
+
+# Write results to output.txt
+echo "Factorial of $number is: $fact" > output.txt
+
+if [ "$is_prime" = true ]; then
+    echo "$number is a prime number." >> output.txt
+else
+    echo "$number is not a prime number." >> output.txt
+fi
+
+# Display the result from output.txt
+cat output.txt

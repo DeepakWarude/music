@@ -1,0 +1,52 @@
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk '{print}' text.txt
+ajay manager account 45000
+sunil clerk account 25000
+varun manager sales 50000
+amit manager account 47000
+tarun peon sales 15000
+deepak clerk sales 23000
+sunil peon sales 13000
+satvik director purchase 80000 
+
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk '/manager/ {print}' text.txt
+ajay manager account 45000
+varun manager sales 50000
+amit manager account 47000
+
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk '{print $1,$4}' text.txt 
+ajay 45000
+sunil 25000
+varun 50000
+amit 47000
+tarun 15000
+deepak 23000
+sunil 13000
+satvik 80000
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk 'length($0) > 10' text.txt
+papapppakdsfkdmnjidhgrj
+dfdfedfedfcdsfsdk
+
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk '{ if($3 == "B6") print $0;}' text.txt
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk 'BEGIN { for(i=1;i<=6;i++) print "square of", i, "is",i*i; }' 
+square of 1 is 1
+square of 2 is 4
+square of 3 is 9
+square of 4 is 16
+square of 5 is 25
+square of 6 is 36
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk 'END { print NR }' text.txt 
+18
+
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk '{ if (length($0) > max) max = length($0) } END { print max }' text.txt
+23
+
+
+kkw@kkw-HP-280-Pro-G6-Microtower-PC:~$ awk '{print $2}' text.txt 
+
