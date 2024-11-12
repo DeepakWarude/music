@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# a. Read first 25 numbers from the user
+echo "Enter 25 numbers:"
+for i in {1..25}; do
+    read -p "Number $i: " num[$i]
+done
+
+# b. Print first five even numbers
+echo "First five even numbers:" > output.txt
+count=0
+for i in "${num[@]}"; do
+    if ((i % 2 == 0)); then
+        echo $i >> output.txt
+        ((count++))
+    fi
+    if ((count == 5)); then
+        break
+    fi
+done
+
+# c. Print first five odd numbers
+echo "First five odd numbers:" >> output.txt
+count=0
+for i in "${num[@]}"; do
+    if ((i % 2 != 0)); then
+        echo $i >> output.txt
+        ((count++))
+    fi
+    if ((count == 5)); then
+        break
+    fi
+done
+
+# d. Print first five prime numbers
+echo "First five prime numbers:" >> output.txt
+count=0
+for i in "${num[@]}"; do
+    is_prime=1
+    for ((j=2; j<=i/2; j++)); do
+        if ((i % j == 0)); then
+            is_prime=0
+            break
+        fi
+    done
+    if ((is_prime == 1)); then
+        echo $i >> output.txt
+        ((count++))
+    fi
+    if ((count == 5)); then
+        break
+    fi
+done
+
+# Show the content of output.txt
+cat output.txt

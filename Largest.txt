@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Prompt user for three numbers
+echo "Enter three numbers:"
+echo -n "Enter first number: "
+read num1
+echo -n "Enter second number: "
+read num2
+echo -n "Enter third number: "
+read num3
+
+# Create a temporary file with the numbers
+echo -e "$num1\n$num2\n$num3" > temp_numbers.txt
+
+# Find the largest number using sort command and save to result.txt
+echo "Input numbers: $num1, $num2, $num3" > result.txt
+echo "The largest number is: $(sort -n temp_numbers.txt | tail -n 1)" >> result.txt
+
+# Remove temporary file
+rm temp_numbers.txt
+
+# Display confirmation
+echo "Results have been written to result.txt"
+echo "Contents of result.txt:"
+cat result.txt

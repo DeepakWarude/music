@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Function to validate if input is a number
+validate_number() {
+    if ! [[ $1 =~ ^[+-]?[0-9]*\.?[0-9]+$ ]]; then
+        echo "Error: Please enter a valid number"
+        exit 1
+    fi
+}
+
+# Clear previous results file if it exists
+> arithmetic_results.txt
+
+# Get input from user
+echo "Enter first number: "
+read num1
+validate_number "$num1"
+
+echo "Enter second number: "
+read num2
+validate_number "$num2"
+
+# Check for division by zero
+if [ "$num2" = "0" ]; then
+    echo "Error: Cannot divide by zero!" | tee -a arithmetic_results.txt
+    exit 1
+fi
+
+# Perform calculations and write to file using bc for floating point arithmetic
+{
+    echo "Arithmetic Operations Results"
+    echo "============================"
+    echo "First Number: $num1"
+    echo "Second Number: $num2"
+    echo "----------------------------"
+    echo "Addition: $num1 + $num2 = $(echo "$num1 + $num2" | bc)"
+    echo "Subtraction: $num1 - $num2 = $(echo "$num1 - $num2" | bc)"
+    echo "Multiplication: $num1 * $num2 = $(echo "$num1 * $num2" | bc)"
+    echo "Division: $num1 / $num2 = $(echo "scale=2; $num1 / $num2" | bc)"
+    echo "============================"
+    echo "Results saved on: $(date)"
+} | tee arithmetic_results.txt
+
+# Confirm results have been saved
+echo -e "\nResults have been saved to arithmetic_results.txt"
